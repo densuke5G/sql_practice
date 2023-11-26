@@ -107,3 +107,127 @@ select job, count(*) as 行数 from emp group by job order by job desc;
 select superior, count(*) as 行数 from emp where superior is not null group by superior;
 --10(3)
 select job, avg(sal) as 平均給与 from emp group by job order by job desc;
+
+--11(1)
+select empno, ename from emp order by empno desc; 
+--11(2)
+select deptno, ename, sal from emp order by deptno asc, sal desc;
+
+--12(1)
+select e.empno, e.ename, d.dname from emp e inner join dept d on e.deptno = d.deptno order by e.empno;
+--12(2)
+select e.empno, e.ename, d.dname from emp e right outer join dept d on e.deptno = d.deptno order by e.empno;
+--12(3)
+create table plan(
+    planno  varchar2(4) primary key,
+    empno   varchar2(3) references emp(empno),
+    scheduled_date  date not null,
+    plan varchar2(200) not null
+);
+--12(4)
+insert into plan VALUES (0001, 001, '2007/02/03', '14時からA社様との面談');
+insert into plan VALUES (0002, 003, '2007/02/03', '大阪出張');
+insert into plan VALUES (0003, 003, '2007/02/05', '大阪出張');
+insert into plan VALUES (0004, 001, '2007/02/04', '9時30分から進捗報告会');
+insert into plan VALUES (0005, 001, '2007/02/06', '18時から経営会議');
+--12(5)
+select p.planno, p.scheduled_date, p.plan, e.empno, e.ename, d.dname from emp e 
+inner join plan p on e.empno = p.empno 
+inner join dept d on e.deptno = d.deptno;
+--12(6)
+select e.empno, e.ename, d.dname, count(*) from emp e 
+inner join plan p on e.empno = p.empno 
+inner join dept d on e.deptno = d.deptno 
+group by e.empno, e.ename, d.dname;
+
+--13(1)
+select empno, ename, sal from emp where sal >= (select avg(sal) from emp);
+--13(2)
+select empno, ename, job from emp where job in (select job from emp group by job having count(job) >= 2);
+
+--14(1)
+create sequence dept_seq
+start with 10
+increment by 1
+nocache;
+--14(2)
+insert into dept VALUES(dept_seq.nextval, '経営統括部', 'Redmond, WA 98052-7329 USA');
+insert into dept VALUES(dept_seq.nextval, 'ネットワーク事業部', null);
+
+--15(1)
+キャラ ID キャラクター スキル ID スキル  カテゴリ 
+1           勇者      1       弓を放つ 攻撃
+1           勇者      2       盾を使う 防御 
+2           魔法使い   3       空を飛ぶ 防御 
+2           魔法使い   4       傷を癒す 回復 
+3           狩人      1       弓を放つ 攻撃 
+3           狩人      5       逃げる 逃亡 
+4           妖精      6       姿を消す 逃亡 
+4           妖精      3       空を飛ぶ 防御 
+5           犬        7       体当たり 攻撃 
+5           犬        5       逃げる 逃亡 
+
+--15(2)
+キャラ ID キャラクター 
+1           勇者    
+2           魔法使い 
+3           狩人   
+4           妖精   
+5           犬     
+
+スキル ID スキル  カテゴリ 
+1       弓を放つ 攻撃
+2       盾を使う 防御 
+3       空を飛ぶ 防御 
+4       傷を癒す 回復 
+5       逃げる   逃亡 
+6       姿を消す 逃亡 
+7       体当たり 攻撃
+
+スキル管理 ID キャラ ID スキル ID 
+1            1          1 
+2            1          2 
+3            2          3 
+4            2          4 
+5            3          1 
+6            3          5 
+7            4          6 
+8            4          3 
+9            5          7 
+10           5          5 
+
+--15(3)
+キャラ ID キャラクター 
+1           勇者    
+2           魔法使い 
+3           狩人   
+4           妖精   
+5           犬     
+
+スキル ID スキル  カテゴリ ID
+1       弓を放つ   1
+2       盾を使う   2 
+3       空を飛ぶ   2 
+4       傷を癒す   3 
+5       逃げる     4 
+6       姿を消す   4 
+7       体当たり   1
+
+カテゴリ ID  カテゴリ
+1           攻撃
+2           防御
+3           回復
+4           逃亡
+
+スキル管理 ID キャラ ID スキル ID 
+1            1          1 
+2            1          2 
+3            2          3 
+4            2          4 
+5            3          1 
+6            3          5 
+7            4          6 
+8            4          3 
+9            5          7 
+10           5          5 
+
